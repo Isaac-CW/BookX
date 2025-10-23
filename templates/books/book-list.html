@@ -12,7 +12,6 @@
             <p class="lead text-muted">Browse thousands of books listed by community members. Exchanging books is sustainable and fun!</p>
         </div>
         <div class="col-md-5">
-            <!-- Search Form -->
             <form method="get" class="d-flex" role="search">
                 <input class="form-control form-control-lg me-2 rounded-pill shadow-sm" type="search" 
                        placeholder="Search by Title, Author, or ISBN" aria-label="Search" 
@@ -38,7 +37,6 @@
                 <a href="{% url 'book-detail' book.pk %}" class="text-decoration-none text-dark">
                     <div class="position-relative">
 
-                        <!-- Condition Badge -->
                         <span class="badge rounded-pill bg-success position-absolute top-0 start-0 m-2 shadow-sm">
                             {{ book.get_condition_display }}
                         </span>
@@ -59,11 +57,11 @@
         {% endfor %}
     </div>
 
-    <!-- Pagination (Placeholder) -->
+    {% comment %} Pagination logic  {% endcomment %}
     <div class="d-flex justify-content-center mt-5">
         <nav aria-label="Book pagination">
             <ul class="pagination">
-                <!-- Django pagination logic goes here if needed -->
+                
             </ul>
         </nav>
     </div>

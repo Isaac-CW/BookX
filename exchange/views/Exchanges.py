@@ -30,7 +30,7 @@ class ListExchangeRequests(LoginRequiredMixin, TemplateView):
         ).select_related(
             'book', 
             'requester', 
-            'book__owner'  # Note: book__owner is needed for outgoing requests display
+            'book__owner'
         ).order_by("-requested_at")
 
         incoming = []

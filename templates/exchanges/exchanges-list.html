@@ -4,7 +4,7 @@
 <div class="container">
     <h1 class="mb-4">My Book Exchanges</h1>
 
-    <!-- Tab Navigation -->
+    {% comment %} Tab setup {% endcomment %}
     <ul class="nav nav-tabs mb-3" id="exchangesTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="incoming-tab" data-bs-toggle="tab" data-bs-target="#incoming-pane" type="button" role="tab" aria-controls="incoming-pane" aria-selected="true">
@@ -21,10 +21,9 @@
         </li>
     </ul>
 
-    <!-- Tab Content -->
     <div class="tab-content" id="exchangesTabContent">
         
-        <!-- Incoming Requests Pane -->
+        {% comment %} Incoming Requests {% endcomment %}
         <div class="tab-pane fade show active" id="incoming-pane" role="tabpanel" aria-labelledby="incoming-tab" tabindex="0">
             <h3 class="mb-3">Requests for Your Books</h3>
             {% if incoming_requests %}
@@ -59,7 +58,7 @@
             {% endif %}
         </div>
 
-        <!-- Outgoing Requests Pane -->
+        {% comment %} Outgoing Requests {% endcomment %}
         <div class="tab-pane fade" id="outgoing-pane" role="tabpanel" aria-labelledby="outgoing-tab" tabindex="0">
             <h3 class="mb-3">Your Requests for Other Books</h3>
             {% if outgoing_requests %}

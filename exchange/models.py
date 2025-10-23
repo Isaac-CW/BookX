@@ -56,7 +56,6 @@ class Exchange(models.Model):
     status = models.CharField(max_length=3, choices=ExchangeStatus.choices, default=ExchangeStatus.PENDING)
 
     requested_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         # A user can only request a specific book once if and only if the status of that

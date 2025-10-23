@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
 
-from ..models import Book
+from ..models import Book, Exchange
 from ..forms import CreateBookForm
     
 class BookCreateView(LoginRequiredMixin, CreateView):
@@ -19,7 +19,7 @@ class BookCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('home')
     
     def form_valid(self, form):
-        # Set the 'owner' field to the current authenticated user
+        # Fill in any auto-filled fields
         form.instance.owner = self.request.user
         
         return super().form_valid(form)
@@ -28,6 +28,25 @@ class InspectBook(DetailView):
     model = Book
     template_name = 'books/book-detail.html'
     context_object_name = 'book'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Initialize the new context variable
+        context['user_active_request'] = None
+
+        # Check if the user is authenticated (essential for this check)
+        if self.request.user.is_authenticated:
+            active_request = Exchange.objects.filter(
+                book=self.object,
+                requester=self.request.user,
+                status__in=['PND', 'ACC'] 
+            ).select_related('requester' ).first()
+
+            if active_request:
+                context['user_active_request'] = active_request
+                
+        return context
     
 class GetOwnedBooks(LoginRequiredMixin, ListView):
     paginate_by = 50

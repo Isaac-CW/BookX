@@ -6,12 +6,12 @@
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <!-- Book Details and Action Column -->
+        
         <div class="col-md-8">
             <h1 class="display-4 fw-bold mb-3">{{ book.title }}</h1>
             <h2 class="h4 text-muted mb-4">By {{ book.author }}</h2>
 
-            <!-- Metadata Table -->
+            
             <ul class="list-group list-group-flush mb-5 rounded-3 border">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Current Condition:</strong>
@@ -27,32 +27,29 @@
                 </li>
             </ul>
 
-            <!-- Description -->
+            
             <h3 class="h5 fw-bold mb-3">Description</h3>
             <p class="text-secondary mb-5">
                 {{ book.description|default:"No detailed description provided for this listing." }}
             </p>
 
-            <!-- Exchange Action Section -->
+            
             <div class="p-4 bg-light rounded-4 shadow-sm">
                 <h3 class="h5 fw-bold mb-3">Exchange Status</h3>
                 
                 {% if book.status == 'EXC' %}
-                    <!-- Status: Exchanged -->
                     <div class="alert alert-danger" role="alert">
                         <i class="bi bi-x-octagon-fill me-2"></i>
                         This book has already been exchanged and is no longer available.
                     </div>
 
                 {% elif book.owner == request.user %}
-                    <!-- Status: Current User is the Owner -->
                     <div class="alert alert-info" role="alert">
                         <i class="bi bi-info-circle-fill me-2"></i>
                         This is your listing. Check your **My Exchanges** dashboard to manage requests.
                     </div>
 
                 {% elif not request.user.is_authenticated %}
-                    <!-- Status: Not Logged In -->
                     <div class="alert alert-warning" role="alert">
                         <i class="bi bi-lock-fill me-2"></i>
                         <a href="{% url 'account_login' %}?next={{ request.path }}" class="alert-link fw-bold">Login</a> or 
@@ -60,27 +57,32 @@
                     </div>
                 
                 {% elif book.status == 'PND' %}
-                    <!-- Status: Pending Exchange (Requested by someone else) -->
                     <div class="alert alert-secondary" role="alert">
                         <i class="bi bi-clock-fill me-2"></i>
                         This book is currently under a pending exchange request.
                     </div>
                     
-                {% else %}
-                    <!-- Status: AVAILABLE (The main action) -->
-                    {% comment %} 
-                        Check if the user has already requested this book (P1 feature - not required for P0, 
-                        but good to plan for a better UX query here).
-                        For P0, we rely on the Exchange model's unique_together constraint to prevent duplicates. 
-                    {% endcomment %}
-
-                    <form method="post" action="{% url 'exchange-create' book.pk %}">
-                        {% csrf_token %}
-                        <p>Ready to give this book a second life?</p>
-                        <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow-lg">
-                            <i class="bi bi-arrow-right-circle-fill me-2"></i> Request This Book
-                        </button>
-                    </form>
+                {% else %}                    
+                    {% if user_active_request %}
+                        <div class="alert alert-warning shadow-sm" role="alert">
+                            <h4 class="alert-heading">Your Request Status:</h4>
+                            <p class="mb-0">
+                                You have an <strong>{{ user_active_request.get_status_display }}</strong> request for this book.
+                            </p>
+                            <hr>
+                            <p class="mb-0 small">
+                                Requested on: {{ user_active_request.requested_at|date:"F j, Y" }}
+                            </p>
+                        </div>
+                    {% else %}
+                        <form method="post" action="{% url 'exchange-create' book.pk %}">
+                            {% csrf_token %}
+                            <p>Ready to give this book a second life?</p>
+                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill shadow-lg">
+                                <i class="bi bi-arrow-right-circle-fill me-2"></i> Request This Book
+                            </button>
+                        </form>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
