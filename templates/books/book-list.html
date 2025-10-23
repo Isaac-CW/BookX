@@ -1,0 +1,79 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %}Available Books for Exchange{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-7">
+            <h1 class="display-5 fw-bold text-dark">Find Your Next Read</h1>
+            <p class="lead text-muted">Browse thousands of books listed by community members. Exchanging books is sustainable and fun!</p>
+        </div>
+        <div class="col-md-5">
+            <!-- Search Form -->
+            <form method="get" class="d-flex" role="search">
+                <input class="form-control form-control-lg me-2 rounded-pill shadow-sm" type="search" 
+                       placeholder="Search by Title, Author, or ISBN" aria-label="Search" 
+                       name="q" value="{{ request.GET.q|default:'' }}">
+                <button class="btn btn-primary btn-lg rounded-pill shadow-sm" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    {% if request.GET.q %}
+        <h2 class="h4 mb-4">Search Results for: **"{{ request.GET.q }}"**</h2>
+    {% else %}
+        <h2 class="h4 mb-4">Latest Listings</h2>
+    {% endif %}
+
+    {% if book_list %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for book in book_list %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                <a href="{% url 'book-detail' book.pk %}" class="text-decoration-none text-dark">
+                    <div class="position-relative">
+
+                        <!-- Condition Badge -->
+                        <span class="badge rounded-pill bg-success position-absolute top-0 start-0 m-2 shadow-sm">
+                            {{ book.get_condition_display }}
+                        </span>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-semibold text-truncate">{{ book.title }}</h5>
+                        <p class="card-text text-muted mb-auto">By: {{ book.author }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-secondary">Listed by: <span class="fw-bold">{{ book.owner.username }}</span></small>
+                            <span class="text-primary fw-bold">View</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination (Placeholder) -->
+    <div class="d-flex justify-content-center mt-5">
+        <nav aria-label="Book pagination">
+            <ul class="pagination">
+                <!-- Django pagination logic goes here if needed -->
+            </ul>
+        </nav>
+    </div>
+
+    {% else %}
+    <div class="alert alert-info text-center py-4 my-5" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        No books found that match your criteria. Try searching for something else or check back later!
+    </div>
+    {% endif %}
+
+</div>
+{% endblock content %}

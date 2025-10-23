@@ -1,0 +1,3 @@
+'''
+    Handles operations regarding users
+'''

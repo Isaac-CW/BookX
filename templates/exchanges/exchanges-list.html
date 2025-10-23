@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">My Book Exchanges</h1>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-3" id="exchangesTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="incoming-tab" data-bs-toggle="tab" data-bs-target="#incoming-pane" type="button" role="tab" aria-controls="incoming-pane" aria-selected="true">
+                Incoming Requests
+                {% if incoming_requests %}
+                    <span class="badge bg-danger">{{ incoming_requests|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="outgoing-tab" data-bs-toggle="tab" data-bs-target="#outgoing-pane" type="button" role="tab" aria-controls="outgoing-pane" aria-selected="false">
+                My Outgoing Requests
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="exchangesTabContent">
+        
+        <!-- Incoming Requests Pane -->
+        <div class="tab-pane fade show active" id="incoming-pane" role="tabpanel" aria-labelledby="incoming-tab" tabindex="0">
+            <h3 class="mb-3">Requests for Your Books</h3>
+            {% if incoming_requests %}
+                <div class="list-group">
+                    {% for exchange in incoming_requests %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Request for <strong>{{ exchange.book.title }}</strong></h5>
+                                <small class="text-muted">{{ exchange.requested_at|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">From user: <strong>{{ exchange.requester.username }}</strong></p>
+                            
+                            {% if exchange.status == 'PND' %}
+                            <div class="mt-2">
+                                <form method="post" action="{% url 'exchange-accept' exchange.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                </form>
+                                <form method="post" action="{% url 'exchange-reject' exchange.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                            {% else %}
+                                <span class="badge bg-info text-dark">{{ exchange.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You have no incoming exchange requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Outgoing Requests Pane -->
+        <div class="tab-pane fade" id="outgoing-pane" role="tabpanel" aria-labelledby="outgoing-tab" tabindex="0">
+            <h3 class="mb-3">Your Requests for Other Books</h3>
+            {% if outgoing_requests %}
+                <div class="list-group">
+                    {% for exchange in outgoing_requests %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1"><strong>{{ exchange.book.title }}</strong> (from {{ exchange.book.owner.username }})</h5>
+                                <small class="text-muted">{{ exchange.requested_at|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">
+                                Status: <span class="badge bg-primary">{{ exchange.get_status_display }}</span>
+                            </p>
+                            {% if exchange.status == 'ACC' %}
+                                <p class="text-success small mt-2">Accepted! Contact {{ exchange.book.owner.username }} ({{ exchange.book.owner.email }}) to arrange the exchange.</p>
+                                <div class="mt-2">
+                                    <form method="post" action="{% url 'exchange-finish' exchange.pk %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">Received "{{ exchange.book.title }}"</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You have not requested any books yet.</p>
+            {% endif %}
+        </div>
+
+    </div> <!-- /tab-content -->
+
+</div>
+{% endblock %}

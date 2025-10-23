@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Log In</h2>
+        <p>Welcome back! Please log in to your account.</p>
+
+        <!-- The form action points to the allauth login URL -->
+        <form method="POST" action="{% url 'account_login' %}" novalidate>
+            {% csrf_token %}
+            
+            <!-- This renders the form fields -->
+            {{ form.as_p }}
+            
+            <!-- This hidden field handles redirection after login -->
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            
+            <button type"submit" class="btn btn-primary w-100">Log In</button>
+        </form>
+
+        <p class="mt-3">
+            <a href="{% url 'account_reset_password' %}">Forgot Password?</a>
+        </p>
+        <p>
+            Don't have an account? <a href="{% url 'account_signup' %}">Sign up here</a>.
+        </p>
+    </div>
+</div>
+{% endblock %}
